@@ -1,6 +1,6 @@
 # Opal CLI Tool
 
-Opal is a command-line interface (CLI) tool designed to crzate a new ERC721, ERC404 or ERC1155 token automatically backed by staked TON tokens. 
+Opal is a command-line interface (CLI) tool designed to create a new ERC721, ERC404 token automatically backed by staked TON tokens. 
 
 ## Features
 
