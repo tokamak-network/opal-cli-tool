@@ -76,49 +76,107 @@ program
     switch (answers.operation) {
       case 'Create a new ERC721 token backed to WSTON':
         console.log('Creating a new ERC721 token backed to WSTON...');
-        cloneAndMove('https://github.com/mehdi-defiesta/newERC721-template.git');
+        cloneAndMove('https://github.com/tokamak-network/new-ERC721-template.git');
         break;
       case 'Create a new ERC1155 token backed to WSTON':
         console.log('Creating a new ERC1155 token backed to WSTON...');
-        cloneAndMove('https://github.com/mehdi-defiesta/newERC1155-template.git'); // Correct URL
+        cloneAndMove('https://github.com/tokamak-network/new-ERC721-template.git'); 
         break;
       case 'Link an existing ERC721 token to WSTON':
         console.log('Linking an existing ERC721 token to WSTON...');
-        cloneAndMove('https://github.com/mehdi-defiesta/linkERC721-template.git'); // Correct URL
+        cloneAndMove('https://github.com/tokamak-network/new-ERC721-template.git'); 
         break;
       default:
         console.log('Invalid operation');
     }
   });
 
-program
+  program
   .command('deploy')
   .description('Deploy the smart contract')
-  .action(() => {
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout
-    });
+  .action(async () => {
+    try {
+      const networkConfig = {
+        optimism: {
+          script: 'scripts/optimism/2.bridgeWstonToOptimism.js',
+          network: 'l1'
+        },
+        arbitrum: {
+          script: 'scripts/arbitrum/2.bridgeWstonToArbitrum.js',
+          network: 'l1'
+        },
+        zkSync: {
+          script: 'scripts/zksync/3.bridgeWstonToZkSync.js',
+          network: 'l1'
+        },
+        Thanos: {
+          script: 'scripts/thanos/2.bridgeWstonToThanos.js',
+          network: 'l1'
+        }
+      };
 
-    const deploy = async () => {
-      try {
-        console.log("\nBefore deploying, please ensure the .env file is updated with the relevant informations.");
-        console.log("\nPlease ensure L2 WSTON contract is deployed on the targetted network. Otherwise please deploy it using the script provided");
+      const { network } = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'network',
+          message: 'Select deployment network:',
+          choices: Object.keys(networkConfig),
+        },
+      ]);
 
-        // Compile the contracts
-        console.log('Compiling contracts...');
-        execSync('npx hardhat compile', { stdio: 'inherit' });
+      const config = networkConfig[network];
 
-        // Execute the deployment script
-        console.log('Deploying contracts...');
-        execSync('npx hardhat run scripts/deploy/2.deployContracts.js', { stdio: 'inherit' });
-        console.log('Deployment script executed successfully.');
-      } catch (error) {
-        console.error('Error during deployment:', error.message);
+      console.log(`
+┌──────────────────────────────────────────────────────┐
+│                 🚀 Deployment Checklist               │
+├──────────────────────────────────────────────────────┤
+│ 1. .env file configured with correct parameters       │
+│ 2. L2 WSTON contract deployed on ${network.padEnd(10)}         │
+│ 3. Sufficient balance in deployment account           │
+└──────────────────────────────────────────────────────┘\n`);
+
+      // Check for existing node_modules
+      if (!fs.existsSync('node_modules')) {
+        console.log('Installing dependencies... 📦');
+        try {
+          execSync('yarn install --network-timeout 600000', { 
+            stdio: 'inherit',
+            env: {
+              ...process.env,
+              NODE_ENV: 'production'
+            }
+          });
+        } catch (error) {
+          console.error('\n⚠️ Dependency installation failed. Trying with npm...');
+          execSync('npm install --legacy-peer-deps', { stdio: 'inherit' });
+        }
       }
-    };
 
-    deploy();
+      if (!fs.existsSync('artifacts')) {
+        console.log('\nCompiling contracts... ⚙️');
+        execSync('npx hardhat compile', { stdio: 'inherit' });
+      }
+
+      console.log(`\nInitiating ${network} deployment... 🌐`);
+      execSync(`npx hardhat run ${config.script} --network ${config.network}`, { 
+        stdio: 'inherit',
+        env: {
+          ...process.env,
+          DEPLOYMENT_NETWORK: network.toUpperCase()
+        }
+      });
+
+      console.log(`
+┌──────────────────────────────────────────────────────┐
+│          ✅ Successfully deployed to ${network.padEnd(10)}       │
+└──────────────────────────────────────────────────────┘`);
+    } catch (error) {
+      console.error(`
+┌──────────────────────────────────────────────────────┐
+│          🚨 Deployment failed: ${error.message.slice(0,40).padEnd(45)}       │
+└──────────────────────────────────────────────────────┘`);
+      process.exit(1);
+    }
   });
 
 program.parse(process.argv);
