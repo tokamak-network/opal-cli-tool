@@ -10,7 +10,7 @@ const program = new Command();
 const os = require('os');
 
 program
-  .name('opal')
+  .name('ston')
   .description('A CLI tool for managing tokens')
   .version('1.0.0');
 
@@ -19,16 +19,15 @@ program
   .description('Initialize a new token operation')
   .action(async () => {
     console.log(`
-         
-       d888888888b   d8888888b      d888888b       888
-      888       888 888      888   888    888      888
-      888       888 888      888  888      888     888
-      888       888 888888888"   88888888888888    888
-      888       888 888         888          888   888
-      888       888 888        888            888  888
-       "888888888"  888       888              888 888888888888
+       d888888888 888888888888888   d888888888b   d8888b     88b
+      888               888        888       888  888  88    888
+      888               888        888       888  888   88   888
+       "88888888b       888        888       888  888    88  888
+              888       888        888       888  888     88 888
+              888       888        888       888  888      88888
+      888888888"        888         "888888888"   888       "88P
           
-                    💎 Welcome to Opal CLI 💎
+                    💎 Welcome to STON CLI 💎
     This tool helps you manage your token operations efficiently.\n
               `);
 
@@ -80,7 +79,7 @@ program
         break;
       case 'Create a new ERC1155 token backed to WSTON':
         console.log('Creating a new ERC1155 token backed to WSTON...');
-        cloneAndMove('https://github.com/tokamak-network/new-ERC721-template.git'); 
+        cloneAndMove('https://github.com/tokamak-network/new-ERC1155-template.git'); 
         break;
       case 'Link an existing ERC721 token to WSTON':
         console.log('Linking an existing ERC721 token to WSTON...');

@@ -14,9 +14,16 @@ To install the Opal CLI tool globally, you can use npm.
 ```
 npm install -g opal-cli-tool 
 ```
-run the cli:
+
+## CLI operations
+initiate a new project:
 ```
-opal init
+ston init
+```
+
+deploy your protocol
+```
+ston deploy
 ```
 
 ## Contributing
