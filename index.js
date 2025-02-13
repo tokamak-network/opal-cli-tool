@@ -173,7 +173,7 @@ program
       }
 
       console.log(`\nInitiating ${network} deployment... 🌐`);
-      execSync(`npx hardhat run ${config.script} --network ${config.network}`, { 
+      execSync(`npx hardhat run ${config.bridgeScript} --network ${config.bridgeNetwork}`, { 
         stdio: 'inherit',
         env: {
           ...process.env,
