@@ -97,20 +97,36 @@ program
     try {
       const networkConfig = {
         optimism: {
-          script: 'scripts/optimism/2.bridgeWstonToOptimism.js',
-          network: 'l1'
+          bridgeScript: 'scripts/optimism/2.bridgeWstonToOptimism.js',
+          bridgeNetwork: 'l1', // Network for the bridge script
+          additionalScripts: [
+            { script: 'scripts/optimism/3.deploySTON.js', network: 'l2' },
+            { script: 'scripts/optimism/4.Initialization.js', network: 'l2' }
+          ]
         },
         arbitrum: {
-          script: 'scripts/arbitrum/2.bridgeWstonToArbitrum.js',
-          network: 'l1'
+          bridgeScript: 'scripts/arbitrum/2.bridgeWstonToArbitrum.js',
+          bridgeNetwork: 'l1', // Network for the bridge script
+          additionalScripts: [
+            { script: 'scripts/arbitrum/3.deploySTON.js', network: 'l2' },
+            { script: 'scripts/arbitrum/4.Initialization.js', network: 'l2' }
+          ]
         },
         zkSync: {
-          script: 'scripts/zksync/3.bridgeWstonToZkSync.js',
-          network: 'l1'
+          bridgeScript: 'scripts/zksync/3.bridgeWstonToZkSync.js',
+          bridgeNetwork: 'l1', // Network for the bridge script
+          additionalScripts: [
+            { script: 'scripts/zksync/4.deploySTON.js', network: 'l2' },
+            { script: 'scripts/zksync/5.Initialization.js', network: 'l2' }
+          ]
         },
-        Thanos: {
-          script: 'scripts/thanos/2.bridgeWstonToThanos.js',
-          network: 'l1'
+        trh: {
+          bridgeScript: 'scripts/trh/2.bridgeWstonToTrh.js',
+          bridgeNetwork: 'l1', // Network for the bridge script
+          additionalScripts: [
+            { script: 'scripts/trh/3.deploySTON.js', network: 'l2' },
+            { script: 'scripts/trh/4.Initialization.js', network: 'l2' }
+          ]
         }
       };
 
@@ -166,14 +182,14 @@ program
       });
 
       console.log(`
-┌──────────────────────────────────────────────────────┐
+┌──────────────────────────────────────────────────────────────────┐
 │          ✅ Successfully deployed to ${network.padEnd(10)}       │
-└──────────────────────────────────────────────────────┘`);
+└──────────────────────────────────────────────────────────────────┘`);
     } catch (error) {
       console.error(`
-┌──────────────────────────────────────────────────────┐
+┌──────────────────────────────────────────────────────────────────────────────┐
 │          🚨 Deployment failed: ${error.message.slice(0,40).padEnd(45)}       │
-└──────────────────────────────────────────────────────┘`);
+└──────────────────────────────────────────────────────────────────────────────┘`);
       process.exit(1);
     }
   });
