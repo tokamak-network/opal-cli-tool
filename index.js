@@ -181,6 +181,21 @@ program
         }
       });
 
+      // Run additional scripts in their respective networks
+      if (config.additionalScripts && config.additionalScripts.length > 0) {
+        console.log('\nDEPLOYING STON ON THE TARGETED NETWORK... 🛠️');
+        for (const { script, network: scriptNetwork } of config.additionalScripts) {
+          console.log(`\nRunning script: ${script} on network: ${scriptNetwork}`);
+          execSync(`npx hardhat run ${script} --network ${scriptNetwork}`, { 
+            stdio: 'inherit',
+            env: {
+              ...process.env,
+              DEPLOYMENT_NETWORK: scriptNetwork.toUpperCase()
+            }
+          });
+        }
+      }
+
       console.log(`
 ┌──────────────────────────────────────────────────────────────────┐
 │          ✅ Successfully deployed to ${network.padEnd(10)}       │
