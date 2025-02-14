@@ -28,7 +28,7 @@ program
       888888888"        888         "888888888"   888       "88P
           
                     💎 Welcome to STON CLI 💎
-    This tool helps you manage your token operations efficiently.\n
+        This tool helps you manage your token operations.\n
               `);
 
     const answers = await inquirer.prompt([
@@ -71,6 +71,28 @@ program
         console.error('Error importing the repository:', error.message);
       }
     };
+
+    const copyScripts = () => {
+      const scripts = ['1.updateERC721.js', '2.createTreasury.js'];
+      scripts.forEach(script => {
+        const srcPath = path.join(__dirname, script);
+        const destPath = path.join(process.cwd(), script);
+        
+        if (!fs.existsSync(srcPath)) {
+          console.error(`Script ${script} not found in the current directory.`);
+          return;
+        }
+
+        if (fs.existsSync(destPath)) {
+          console.log(`Skipping existing script: ${script}`);
+          return;
+        }
+
+        fs.copyFileSync(srcPath, destPath);
+        console.log(`Copied ${script} to the current directory.`);
+      });
+      console.log('Scripts copied successfully.');
+    };
     
     switch (answers.operation) {
       case 'Create a new ERC721 token backed to WSTON':
@@ -83,7 +105,7 @@ program
         break;
       case 'Link an existing ERC721 token to WSTON':
         console.log('Linking an existing ERC721 token to WSTON...');
-        cloneAndMove('https://github.com/tokamak-network/new-ERC721-template.git'); 
+        copyScripts();
         break;
       default:
         console.log('Invalid operation');
