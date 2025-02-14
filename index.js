@@ -74,10 +74,18 @@ program
 
     const copyScripts = () => {
       const scripts = ['1.updateERC721.js', '2.createTreasury.js'];
+      const scriptsDir = path.join(process.cwd(), 'scripts'); // Path to the "scripts" folder
+
+      // Create the "scripts" folder if it doesn't exist
+      if (!fs.existsSync(scriptsDir)) {
+        fs.mkdirSync(scriptsDir, { recursive: true });
+        console.log('Created "scripts" folder.');
+      }
+
       scripts.forEach(script => {
-        const srcPath = path.join(__dirname, script);
-        const destPath = path.join(process.cwd(), script);
-        
+        const srcPath = path.join(__dirname, script); // Source path of the script
+        const destPath = path.join(scriptsDir, script); // Destination path in the "scripts" folder
+
         if (!fs.existsSync(srcPath)) {
           console.error(`Script ${script} not found in the current directory.`);
           return;
@@ -88,11 +96,13 @@ program
           return;
         }
 
-        fs.copyFileSync(srcPath, destPath);
-        console.log(`Copied ${script} to the current directory.`);
+        fs.copyFileSync(srcPath, destPath); // Copy the script to the "scripts" folder
+        console.log(`Copied ${script} to the "scripts" folder.`);
       });
+
       console.log('Scripts copied successfully.');
     };
+
     
     switch (answers.operation) {
       case 'Create a new ERC721 token backed to WSTON':
