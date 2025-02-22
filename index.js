@@ -31,7 +31,34 @@ program
         This tool helps you manage your token operations.\n
               `);
 
-    const answers = await inquirer.prompt([
+    
+      // Cleanup function to remove existing files and folders
+      const cleanup = () => {
+        const filesToRemove = [
+          'contracts',
+          'scripts',
+          'test',
+          'hardhat.config.js',
+          'package.json',
+          'yarn.lock',
+          'node_modules',
+          'artifacts',
+          'cache'
+        ];
+  
+        filesToRemove.forEach(fileOrDir => {
+          const targetPath = path.join(process.cwd(), fileOrDir);
+          if (fs.existsSync(targetPath)) {
+            console.log(`Removing ${fileOrDir}...`);
+            fs.rmSync(targetPath, { recursive: true, force: true });
+          }
+        });
+      };
+  
+      // Perform cleanup before proceeding
+      cleanup();
+      
+      const answers = await inquirer.prompt([
       {
         type: 'list',
         name: 'operation',
