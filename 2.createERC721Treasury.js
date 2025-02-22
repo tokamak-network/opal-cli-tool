@@ -8,13 +8,51 @@ pragma solidity ^0.8.28;
 
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { INFTFactory } from "./interfaces/INFTFactory.sol"; 
-import { NFTFactoryStorage } from "./NFTFactoryStorage.sol";
-import { AuthControl } from "./common/AuthControl.sol";
 import { IERC721Receiver } from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
-import "./proxy/ProxyStorage.sol";
-
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+
+interface INFTFactory {
+    struct Nft {
+        // add any additionnal features here
+        uint256 tokenId;  
+        uint256 value; // 27 decimals
+        string tokenURI; // IPFS address of the metadata file 
+    }
+
+    function createNFT( 
+        uint256 _value,
+        address _owner,
+        string memory _tokenURI
+    ) external  returns (uint256);
+
+    function createNFTPool(
+        uint256[] memory _values,
+        address[] memory _owners,
+        string[] memory _tokenURIs
+    ) external returns (uint256[] memory);
+
+    function transferFrom(address from, address to, uint256 tokenId) external;
+
+    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data) external;
+
+    function setTokenURI(uint256 tokenId, string memory _tokenURI) external;
+
+    function ownerOf(uint256 tokenId) external view returns(address);
+
+    function getNFTsSupplyTotalValue() external view returns(uint256 totalValue);
+
+    function getApproved(uint256 tokenId) external view returns (address);
+
+    function approve(address to, uint256 tokenId) external;
+
+    function setApprovalForAll(address operator, bool approved) external;
+
+    function isApprovedForAll(address owner, address operator) external view returns (bool);
+
+    function getNFT(uint256 tokenId) external view returns (Nft memory);
+
+}
 
 
 /**
@@ -26,7 +64,7 @@ import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.s
  * @dev The contract integrates with external interfaces for NFT creation, marketplace operations, and token swaps.
  * It includes security features such as pausing operations and role-based access control.
  */
-contract Treasury is ProxyStorage, IERC721Receiver, ReentrancyGuard, AuthControl {
+contract Treasury is IERC721Receiver, ReentrancyGuard, OwnableUpgradeable {
     using SafeERC20 for IERC20;
 
     address internal nftFactory;
@@ -51,7 +89,7 @@ contract Treasury is ProxyStorage, IERC721Receiver, ReentrancyGuard, AuthControl
     }
 
     modifier onlyOwnerOrNFTFactory() {
-      require(isOwner() || msg.sender == nftFactory, "caller is neither owner nor NFTFactory");
+      require(msg.sender == owner() || msg.sender == nftFactory, "caller is neither owner nor NFTFactory");
       _;
     }
 
@@ -69,12 +107,13 @@ contract Treasury is ProxyStorage, IERC721Receiver, ReentrancyGuard, AuthControl
 
     /**
      * @notice Initializes the Treasury contract with the given parameters.
+     * @param _owner owner of the contract
      * @param _wston Address of the WSTON token.
      * @param _nftFactory Address of the NFT factory contract.
      */
-    function initialize(address _wston, address _nftFactory) external {
+    function initialize(address _owner, address _wston, address _nftFactory) external {
         require(!initialized, "already initialized");   
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        __Ownable_init(_owner);
         nftFactory = _nftFactory;
         wston = _wston;
         initialized = true;
@@ -84,7 +123,7 @@ contract Treasury is ProxyStorage, IERC721Receiver, ReentrancyGuard, AuthControl
      * @notice Sets the address of the NFT factory.
      * @param _nftFactory New address of the NFT factory contract.
      */
-    function setNftFactory(address _nftFactory) external onlyOwnerOrAdmin {
+    function setNftFactory(address _nftFactory) external onlyOwner {
         _checkNonAddress(nftFactory);
         nftFactory = _nftFactory;
     }
@@ -102,7 +141,7 @@ contract Treasury is ProxyStorage, IERC721Receiver, ReentrancyGuard, AuthControl
      * @param operator Address of the operator.
      * @param _tokenId ID of the token to approve.
      */
-    function approveNFT(address operator, uint256 _tokenId) external onlyOwnerOrAdmin {
+    function approveNFT(address operator, uint256 _tokenId) external onlyOwner {
         INFTFactory(nftFactory).approve(operator, _tokenId);
     }
 

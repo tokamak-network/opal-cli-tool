@@ -39,7 +39,8 @@ program
         choices: [
           'Create a new ERC721 token backed to WSTON',
           'Create a new ERC1155 token backed to WSTON',
-          'Link an existing ERC721 token to WSTON',
+          'Collateralize an existing ERC721 token with WSTON',
+          'Collateralize an existing ERC1155 token with WSTON'
         ],
       },
     ]);
@@ -72,8 +73,39 @@ program
       }
     };
 
-    const copyScripts = () => {
-      const scripts = ['1.updateERC721.js', '2.createTreasury.js'];
+    const copyERC721Scripts = () => {
+      const scripts = ['1.updateERC721.js', '2.createERC721Treasury.js'];
+      const scriptsDir = path.join(process.cwd(), 'scripts'); // Path to the "scripts" folder
+
+      // Create the "scripts" folder if it doesn't exist
+      if (!fs.existsSync(scriptsDir)) {
+        fs.mkdirSync(scriptsDir, { recursive: true });
+        console.log('Created "scripts" folder.');
+      }
+
+      scripts.forEach(script => {
+        const srcPath = path.join(__dirname, script); // Source path of the script
+        const destPath = path.join(scriptsDir, script); // Destination path in the "scripts" folder
+
+        if (!fs.existsSync(srcPath)) {
+          console.error(`Script ${script} not found in the current directory.`);
+          return;
+        }
+
+        if (fs.existsSync(destPath)) {
+          console.log(`Skipping existing script: ${script}`);
+          return;
+        }
+
+        fs.copyFileSync(srcPath, destPath); // Copy the script to the "scripts" folder
+        console.log(`Copied ${script} to the "scripts" folder.`);
+      });
+
+      console.log('Scripts copied successfully.');
+    };
+
+    const copyERC1155Scripts = () => {
+      const scripts = ['1.updateERC1155.js', '2.createERC1155Treasury.js'];
       const scriptsDir = path.join(process.cwd(), 'scripts'); // Path to the "scripts" folder
 
       // Create the "scripts" folder if it doesn't exist
@@ -113,10 +145,13 @@ program
         console.log('Creating a new ERC1155 token backed to WSTON...');
         cloneAndMove('https://github.com/tokamak-network/new-ERC1155-template.git'); 
         break;
-      case 'Link an existing ERC721 token to WSTON':
+      case 'Collateralize an existing ERC721 token with WSTON':
         console.log('Linking an existing ERC721 token to WSTON...');
-        copyScripts();
+        copyERC721Scripts();
         break;
+      case 'Collateralize an existing ERC1155 token with WSTON':
+        console.log('Collateralizing an existing ERC1155 token with WSTON...');
+        copyERC1155Scripts();
       default:
         console.log('Invalid operation');
     }
