@@ -33,30 +33,29 @@ program
 
     
       // Cleanup function to remove existing files and folders
-      const cleanup = () => {
-        const filesToRemove = [
-          'contracts',
-          'scripts',
-          'test',
-          'hardhat.config.js',
-          'package.json',
-          'yarn.lock',
-          'node_modules',
-          'artifacts',
-          'cache'
-        ];
-  
-        filesToRemove.forEach(fileOrDir => {
-          const targetPath = path.join(process.cwd(), fileOrDir);
-          if (fs.existsSync(targetPath)) {
-            console.log(`Removing ${fileOrDir}...`);
-            fs.rmSync(targetPath, { recursive: true, force: true });
-          }
+      const emptyDirectory = (dirPath) => {
+        if (!fs.existsSync(dirPath)) {
+          console.log(`Directory ${dirPath} does not exist. Skipping.`);
+          return;
+        }
+      
+        // Read the contents of the directory
+        const items = fs.readdirSync(dirPath);
+      
+        if (items.length === 0) {
+          console.log(`Directory ${dirPath} is already empty. Skipping.`);
+          return;
+        }
+      
+        // Delete each item in the directory
+        items.forEach(item => {
+          const itemPath = path.join(dirPath, item);
+          console.log(`Removing ${item}...`);
+          fs.rmSync(itemPath, { recursive: true, force: true });
         });
+      
+        console.log(`Directory ${dirPath} has been emptied.`);
       };
-  
-      // Perform cleanup before proceeding
-      cleanup();
       
       const answers = await inquirer.prompt([
       {
@@ -165,12 +164,72 @@ program
     
     switch (answers.operation) {
       case 'Create a new ERC721 token backed to WSTON':
+        const items = fs.readdirSync(process.cwd());
+        if (items.length === 0) {
+          console.log('Creating a new ERC721 token backed to WSTON...');
+          cloneAndMove('https://github.com/tokamak-network/new-ERC721-template.git');
+          break;
+        }
+        // Prompt the user for confirmation
+        const rl = readline.createInterface({
+          input: process.stdin,
+          output: process.stdout,
+        });
+
+        const answer = await new Promise((resolve) => {
+          rl.question(
+            `\n⚠️ WARNING: This will delete all files and folders in your current folder. Are you sure you want to proceed? (Press Enter to confirm, or type 'no' to abort): `,
+            (input) => {
+              resolve(input.trim().toLowerCase());
+            }
+          );
+        });
+
+        rl.close();
+
+        // If the user does not confirm, abort the operation
+        if (answer === 'no' || answer === 'n') {
+          console.log('Operation aborted by the user.');
+          break;
+        }
+        // Perform cleanup before proceeding
+        emptyDirectory(process.cwd());
         console.log('Creating a new ERC721 token backed to WSTON...');
         cloneAndMove('https://github.com/tokamak-network/new-ERC721-template.git');
         break;
       case 'Create a new ERC1155 token backed to WSTON':
+        const items2 = fs.readdirSync(process.cwd());
+        if (items2.length === 0) {
+          console.log('Creating a new ERC1155 token backed to WSTON...');
+          cloneAndMove('https://github.com/tokamak-network/new-ERC1155-template.git');
+          break;
+        }
+        // Prompt the user for confirmation
+        const rl2 = readline.createInterface({
+          input: process.stdin,
+          output: process.stdout,
+        });
+
+        const answer2 = await new Promise((resolve) => {
+          rl2.question(
+            `\n⚠️ WARNING: This will delete all files and folders in your current folder. Are you sure you want to proceed? (Press Enter to confirm, or type 'no' to abort): `,
+            (input) => {
+              resolve(input.trim().toLowerCase());
+            }
+          );
+        });
+
+        rl2.close();
+
+        // If the user does not confirm, abort the operation
+        if (answer2 === 'no' || answer2 === 'n') {
+          console.log('Operation aborted by the user.');
+          break;
+        }
+        // Perform cleanup before proceeding
+        emptyDirectory(process.cwd());
         console.log('Creating a new ERC1155 token backed to WSTON...');
-        cloneAndMove('https://github.com/tokamak-network/new-ERC1155-template.git'); 
+        cloneAndMove('https://github.com/tokamak-network/new-ERC1155-template.git');
         break;
       case 'Collateralize an existing ERC721 token with WSTON':
         console.log('Linking an existing ERC721 token to WSTON...');
