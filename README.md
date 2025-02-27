@@ -1,18 +1,18 @@
-# Opal CLI Tool
+# STON kit CLI Tool
 
-Opal is a command-line interface (CLI) tool designed to create a new ERC721, ERC404 token automatically backed by staked TON tokens. 
+STON kit is a command-line interface (CLI) tool designed to create a new ERC721/ERC1155 token automatically backed by staked TON tokens. 
 
 ## Features
 
-- Create new ERC721, ERC1155, and ERC404 tokens backed by WSTON.
-- Link existing ERC721 tokens to WSTON.
-- Interactive command-line prompts for easy operation.
+- Create new ERC721 / ERC1155 tokens backed by WSTON.
+- Link existing ERC721 / ERC1155 tokens to WSTON.
+- Interactive command-line prompts for easy bridging/deployment operations.
 
 ## Installation
 
 To install the Opal CLI tool globally, you can use npm. 
 ```
-npm install -g opal-cli-tool 
+npm install -g ston-kit
 ```
 
 ## CLI operations

@@ -164,7 +164,7 @@ if (contractDeclarationMatch) {
     const existingInheritance = contractDeclarationMatch[2];
 
     // Modify the contract declaration to include new inheritance and storage
-    const updatedContractDeclaration = `${newImports}\n${newInterfaces}\ncontract ${contractName} is ${existingInheritance}, IERC721Receiver {${newStorage}`;
+    const updatedContractDeclaration = `${newImports}\n${newInterfaces}\ncontract UpdatedNFTFactory is ${existingInheritance}, IERC721Receiver {${newStorage}`;
 
     // Replace the old contract declaration with the updated one
     contractContent = contractContent.replace(
