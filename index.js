@@ -234,10 +234,18 @@ program
       case 'Collateralize an existing ERC721 token with WSTON':
         console.log('Linking an existing ERC721 token to WSTON...');
         copyERC721Scripts();
+        console.log("updating the NFTFactory contract");
+        execSync('node scripts/1.updateERC721.js');
+        console.log("creating the treasury contract");
+        execSync('node scripts/2.createERC721Treasury.js');
         break;
       case 'Collateralize an existing ERC1155 token with WSTON':
         console.log('Collateralizing an existing ERC1155 token with WSTON...');
         copyERC1155Scripts();
+        console.log("updating the NFTFactory contract");
+        execSync('node scripts/1.updateERC1155.js');
+        console.log("creating the treasury contract");
+        execSync('node scripts/2.createERC1155Treasury.js');
         break;
       default:
         console.log('Invalid operation');
