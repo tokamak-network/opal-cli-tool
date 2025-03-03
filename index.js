@@ -131,7 +131,7 @@ program
     };
 
     const copyERC1155Scripts = () => {
-      const scripts = ['3.updateERC1155.js', '4.createERC1155Treasury.js'];
+      const scripts = ['1.updateERC1155.js', '2.createERC1155Treasury.js'];
       const scriptsDir = path.join(process.cwd(), 'scripts'); // Path to the "scripts" folder
 
       // Create the "scripts" folder if it doesn't exist
